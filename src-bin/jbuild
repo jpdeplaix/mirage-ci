@@ -1,11 +1,12 @@
-(executables 
- ((names (opamRepoCI))
+(executables
+ ((names (opamRepoCI opamArmCI))
   (libraries (mirage-ci dockerfile))
-  (flags (:standard -short-paths)) 
+  (flags (:standard -short-paths))
  ))
 
 (install
  ((section bin)
   (files (
    (opamRepoCI.exe as opam-repo-ci)
+   (opamArmCI.exe as opam-arm-ci)
   ))))
