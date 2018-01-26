@@ -1,5 +1,5 @@
 FROM ocaml/opam:alpine
-RUN cd /tmp && curl -OL https://get.docker.com/builds/Linux/x86_64/docker-17.05.0-ce.tgz && tar -zxvf docker-17.05.0-ce.tgz docker/docker && sudo mv docker/docker /usr/bin && rm -f docker-17.05.0-ce.tgz
+RUN sudo apk add --update --no-cache docker
 RUN cd /home/opam/opam-repository && git pull origin master && opam update -uy
 RUN opam depext -uivy -j 4 irmin-unix ezjsonm bos ptime fmt datakit-ci conf-libev 
 ADD . /home/opam/src

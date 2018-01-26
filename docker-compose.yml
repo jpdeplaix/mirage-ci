@@ -18,7 +18,7 @@ services:
      - redis
   datakit:
     restart: always
-    image: datakit/db
+    image: jpdeplaix/datakit-db
     user: "root"
     volumes:
       - ./data/datakit/data:/data
@@ -26,7 +26,7 @@ services:
     command: --git /data --listen-9p tcp://0.0.0.0:5640
   bridge:
     restart: always
-    image: datakit/github-bridge:0.11.0
+    image: jpdeplaix/datakit-github-bridge
     command: --datakit tcp://datakit:5640 -v -c "*:r,status[ci/datakit]:x,webhook:rw" --webhook http://${CI_DOMAIN_NAME}:8100
     ports:
      - "8100:8100"

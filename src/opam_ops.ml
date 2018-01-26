@@ -189,7 +189,7 @@ let packages_from_diff ?(default=["ocamlfind"]) {build_t;run_t;_} target =
   match Target.id target with
   |`Ref _ -> Term.return default
   |`PR pr_num ->
-    let dfile = Dockerfile.(from ~tag:"opam-diff" "unikernel/mirage-ci") in
+    let dfile = Dockerfile.(from "jpdeplaix/opam-diff") in
     Docker_build.run build_t ~pull:true ~hum:"opam-diff image" dfile >>= fun img ->
     let cmd = [opam_slug; string_of_int pr_num] in
     Docker_run.run ~tag:img.Docker_build.sha256 ~cmd run_t >|=
