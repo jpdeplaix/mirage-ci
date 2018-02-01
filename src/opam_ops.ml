@@ -273,7 +273,7 @@ let run_phases ?volume ~revdeps ~packages ~remotes ~typ ~opam_version ~opam_repo
     (* phase 4 *)
     let alpine36 = build "alpine-3.6" primary_ocaml_version in
     let ubuntu1604 = build "ubuntu-16.04" primary_ocaml_version in
-    let ubuntu1710 = build "ubuntu-17.10" primary_ocaml_version in
+    let ubuntu1710 = build "ubuntu-17.10" "4.06.0" in
     let centos7 = build "centos-7" primary_ocaml_version in
     let phase4 =
       Term_utils.after phase3 >>= fun () ->
