@@ -17,7 +17,6 @@ module Builder = struct
   let label = "opamRepo"
   let docker_t = DO.v ~logs ~label ~jobs:32 ()
   let opam_t = Opam_build.v ~logs ~label
-  let volume_v1 = Fpath.v "opam-archive"
   let volume_v2 = Fpath.v "opam2-archive"
 
   let packages_of_repo {Repo.user;repo} =
@@ -35,14 +34,8 @@ module Builder = struct
 
   let run_phases typ target =
     let tests ~revdeps =
-      (repo_builder ~revdeps:false ~typ ~opam_version:`V1 ~volume:volume_v1 target) @
-      (repo_builder ~revdeps ~typ ~opam_version:`V2 ~volume:volume_v2 target)
+      repo_builder ~revdeps ~typ ~opam_version:`V2 ~volume:volume_v2 target
     in
-    let archive_v1 = "Archive v1.2", (
-      Term.target target >>= fun target ->
-      Commit.hash (Target.head target) |>
-      Opam_ops.V1.build_archive ~volume:volume_v1 docker_t) >>= fun (_,res) ->
-      Term.return res in
     let archive_v2 = "Archive v2.0", (
       Term.target target >>= fun target ->
       Commit.hash (Target.head target) |>
@@ -53,7 +46,7 @@ module Builder = struct
        let base_tests = tests ~revdeps:false in
        let archives =
          match Target.repo target with
-         | {Repo.repo="opam-repository"; user} when Datakit_github.User.name user = "ocaml"-> [archive_v1;archive_v2]
+         | {Repo.repo="opam-repository"; user} when Datakit_github.User.name user = "ocaml"-> [archive_v2]
          | _ -> [] in
        archives @ base_tests
     |`Ref _  -> []
@@ -93,4 +86,3 @@ let () =
    ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
   ---------------------------------------------------------------------------*)
-
