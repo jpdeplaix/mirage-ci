@@ -33,7 +33,7 @@ module Builder = struct
 
   let run_phases typ target =
     let tests ~revdeps =
-      (repo_builder ~revdeps ~typ ~opam_version:`V2 ~volume:volume_v2 target)
+      repo_builder ~revdeps ~typ ~opam_version:`V2 ~volume:volume_v2 target
     in
     let archive_v2 = "Archive v2.0", (
       Term.target target >>= fun target ->
