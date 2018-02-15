@@ -120,7 +120,7 @@ module Opam_builder = struct
       OD.add_ci_script @@
       OD.add_remotes remotes @@
       target_d @@
-      run "opam remove -y travis-opam" @@
+      run "opam remove -y travis-opam" @@ (* TODO: Remove this. (tmp fix) *)
       run "opam update -uy"
     in
     let open Utils.Infix in
