@@ -47,7 +47,7 @@ module Docker_runner = struct
   let generate t ~switch ~log trans job_id {img;cmd;volumes;_} =
     let tee outputs s = List.iter (fun o -> o s) outputs in
     let vols = List.flatten (List.map (fun (h,c) -> ["-v";(Fmt.strf "%a:%a" Fpath.pp h Fpath.pp c)]) volumes) in
-    let cmd = Array.of_list ("docker"::"run"::"--rm"::vols@img::cmd) in
+    let cmd = Array.of_list ("docker"::"run"::"--rm"::"--memory-swap"::"-1"::vols@img::cmd) in
     let cmd_output = Buffer.create 1024 in
     Live_log.heading log "Using base image %s" img;
     Live_log.heading log "%s" (Fmt.(strf "%a" (array ~sep:sp string)) cmd);
