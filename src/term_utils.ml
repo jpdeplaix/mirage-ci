@@ -27,7 +27,7 @@ let ignore_failure ~on_fail t =
   | Ok m -> Term.return m
 
 let report ~order ~label t =
-  let l = Fmt.strf "%d %s" order label in
+  let l = Fmt.strf "%d arm64 %s" order label in (* TODO: Fix this *)
   let t = t >>= fun _ -> Term.return label in
   l, t
 
