@@ -17,25 +17,19 @@ module Builder = struct
   let label = "opamRepo"
   let docker_t = DO.v ~logs ~label ~jobs:4 ()
   let opam_t = Opam_build.v ~logs ~label
-  let volume_v2 = Fpath.v "opam2-archive"
+  let volume = Fpath.v "opam2-archive"
+  let revdeps = true
+  let remotes = []
+  let opam_version = `V2
+  let opam_repo = Opam_docker.ocaml_opam_repository
 
-  let repo_builder ~revdeps ~typ ~opam_version ?volume target =
+  let repo_builder ~typ ~target =
     let packages = Opam_ops.packages_from_diff ~default:[] docker_t target in
-    let opam_repo = Opam_docker.ocaml_opam_repository in
-    Opam_ops.run_phases ?volume ~revdeps ~packages ~remotes:[] ~typ ~opam_version ~opam_repo opam_t docker_t target
+    Opam_ops.run_phases ~volume ~revdeps ~packages ~remotes ~typ ~opam_version ~opam_repo opam_t docker_t target
 
-  let run_phases typ target =
-    let tests ~revdeps =
-      repo_builder ~revdeps ~typ ~opam_version:`V2 ~volume:volume_v2 target
-    in
-    let archive_v2 = "Archive v2.0", (
-      Term.target target >>= fun target ->
-      Commit.hash (Target.head target) |>
-      Opam_ops.V2.build_archive ~volume:volume_v2 docker_t) >>= fun (_,res) ->
-      Term.return res in
-    match Target.id target with
-    |`Ref _  -> []
-    |`PR _ -> tests ~revdeps:true
+  let run_phases typ target = match Target.id target with
+    | `Ref _ -> []
+    | `PR _ -> repo_builder ~typ ~target
 
   let tests = [
     Config.project ~id:"ocaml/opam-repository" (run_phases `Full_repo);
