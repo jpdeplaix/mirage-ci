@@ -73,11 +73,10 @@ module Docker_builder = struct
     let pull_cli = match pull with false -> "" | true -> " --pull" in
     let images_output = Buffer.create 1024 in
     Utils.with_tmpdir (fun tmp_dir ->
-      Sys.command ("cp -r /home/opam/opam-repository/cache '"^tmp_dir^"'");
       Rresult.R.get_ok (Dockerfile_gen.generate_dockerfile ~crunch:true (Fpath.v tmp_dir) dockerfile);
       Monitored_pool.use ~log ~label:"docker build" t.pool job_id (fun () ->
         Utils.with_timeout ~switch t.timeout (fun switch ->
-          let cmd = Printf.sprintf "cd '%s' && docker build%s %s%s%s --rm --force-rm --memory-swap -1 ." tmp_dir network_cli label tag_cli pull_cli in
+          let cmd = Printf.sprintf "docker build%s %s%s%s --rm --force-rm --memory-swap -1 %s" network_cli label tag_cli pull_cli tmp_dir in
           Process.run ~switch ~output ("", [|"sh";"-c";cmd|]) >>= fun () ->
           let cmd = Printf.sprintf "docker images -q --digests --no-trunc --filter \"label=com.docker.datakit.digest=%s\" --filter \"label=com.docker.datakit.builton=%s\"" digest builton in 
           Process.run ~switch ~output:(Buffer.add_string images_output) ("",[|"sh";"-c";cmd|]))
