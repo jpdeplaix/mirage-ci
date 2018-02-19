@@ -73,7 +73,7 @@ module Docker_builder = struct
     let pull_cli = match pull with false -> "" | true -> " --pull" in
     let images_output = Buffer.create 1024 in
     Utils.with_tmpdir (fun tmp_dir ->
-      Sys.command ("cp -r /home/opam/opam-repository/cache '" ^ Fpath.to_string Fpath.(v tmp_dir / "cache") ^ "'";
+      Sys.command ("cp -r /home/opam/opam-repository/cache '" ^ Fpath.to_string Fpath.(v tmp_dir / "cache") ^ "'");
       Rresult.R.get_ok (Dockerfile_gen.generate_dockerfile ~crunch:true (Fpath.v tmp_dir) dockerfile);
       Monitored_pool.use ~log ~label:"docker build" t.pool job_id (fun () ->
         Utils.with_timeout ~switch t.timeout (fun switch ->
