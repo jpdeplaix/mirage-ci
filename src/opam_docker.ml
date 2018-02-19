@@ -119,6 +119,7 @@ module V2 = struct
   open !Dockerfile
 
   let add_cache_dir =
+    run "ADD /home/opam/opam-repository/cache /home/opam/opam-repository/cache" @@
     run "echo 'archive-mirrors: [ \"file:///home/opam/opam-repository/cache\" ]' >> /home/opam/.opam/config"
 
   let add_remotes rs =
