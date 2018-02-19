@@ -9,6 +9,7 @@ RUN opam pin add -yn mirage-ci /home/opam/tmp
 RUN opam depext -uvy mirage-ci
 RUN opam install -vy --deps-only mirage-ci
 RUN opam pin remove -n mirage-ci && sudo rm -r /home/opam/tmp
+RUN opam admin cache
 ADD . /home/opam/src
 RUN sudo chown -R opam /home/opam/src
 RUN opam pin add -vy mirage-ci /home/opam/src
