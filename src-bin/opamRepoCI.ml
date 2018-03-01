@@ -15,7 +15,7 @@ module Builder = struct
   open Term.Infix
 
   let label = "opamRepo"
-  let docker_t = DO.v ~logs ~label ~jobs:96 ()
+  let docker_t = DO.v ~logs ~label ~jobs:32 ()
   let opam_t = Opam_build.v ~logs ~label
   let volume = Fpath.v "/home/opam/opam-repository/cache"
   let revdeps = true
