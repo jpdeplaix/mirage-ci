@@ -230,7 +230,7 @@ let run_phases ?volume ~revdeps ~packages ~remotes ~typ ~opam_version ~opam_repo
     distro_build ~packages ~target ~distro ~ocaml_version ~remotes ~typ ~opam_version ~opam_repo opam_t docker_t
   in
   (* phase 1 *)
-  let debian_stable = build "debian-unstable" primary_ocaml_version in
+  let debian_stable = build "debian-9" primary_ocaml_version in
   let phase1 = debian_stable >>= fun _ -> Term.return () in
   (* phase 2 revdeps *)
   let pkg_revdeps =
@@ -247,7 +247,7 @@ let run_phases ?volume ~revdeps ~packages ~remotes ~typ ~opam_version ~opam_repo
     (* phase 3 compiler variants *)
   let compiler_versions =
       List.map (fun oc ->
-        let t = build "debian-unstable" oc in
+        let t = build "debian-9" oc in
         ("OCaml "^oc), t
       ) compiler_variants in
     let phase3 =
