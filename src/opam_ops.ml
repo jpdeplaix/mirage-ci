@@ -175,7 +175,18 @@ let packages_from_diff ?(default=["ocamlfind"]) {build_t;run_t;_} target =
   match Target.id target with
   |`Ref _ -> Term.return default
   |`PR pr_num ->
-    let dfile = Dockerfile.(from "jpdeplaix/opam-diff") in
+    let dfile =
+      let open Dockerfile in
+      from "alpine" @@
+      run "apk --no-cache add curl" @@
+      run "echo '#!/bin/sh -eu' >> /root/opam-github-pr-diff" @@
+      run "echo 'REPO_SLUG=$1' >> /root/opam-github-pr-diff" @@
+      run "echo 'PRNUM=$2' >> /root/opam-github-pr-diff" @@
+      run {|echo 'curl -sL https://github.com/$REPO_SLUG/pull/$PRNUM.diff | \
+                 sed -E -n -e \'s,\+\+\+ b/packages/[^/]*/([^/]*)/.*,\1,p\' | \
+                 sort -u' >> /root/opam-github-pr-diff|} @@
+      entrypoint_exec ["/root/opam-github-pr-diff"]
+    in
     Docker_build.run build_t ~pull:true ~hum:"opam-diff image" dfile >>= fun img ->
     let cmd = [opam_slug; string_of_int pr_num] in
     Docker_run.run ~tag:img.Docker_build.sha256 ~cmd run_t >|=
