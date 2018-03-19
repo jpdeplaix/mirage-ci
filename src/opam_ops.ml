@@ -185,6 +185,7 @@ let packages_from_diff ?(default=["ocamlfind"]) {build_t;run_t;_} target =
       run {|echo 'curl -sL https://github.com/$REPO_SLUG/pull/$PRNUM.diff | \
                   sed -E -n -e '\''s,\+\+\+ b/packages/[^/]*/([^/]*)/.*,\1,p'\'' | \
                   sort -u' >> /root/opam-github-pr-diff|} @@
+      run "chmod +x /root/opam-github-pr-diff" @@
       entrypoint_exec ["/root/opam-github-pr-diff"]
     in
     Docker_build.run build_t ~pull:true ~hum:"opam-diff image" dfile >>= fun img ->
