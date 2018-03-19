@@ -181,6 +181,7 @@ let packages_from_diff ?(default=["ocamlfind"]) {build_t;run_t;_} target =
       let open Dockerfile in
       from "alpine" @@
       run "apk --no-cache add curl" @@
+      comment "" @@ (* NOTE: Avoids concat and thus to download curl everytime *)
       run "echo '#!/bin/sh -eu' >> /root/opam-github-pr-diff" @@
       run "echo 'REPO_SLUG=$1' >> /root/opam-github-pr-diff" @@
       run "echo 'PRNUM=$2' >> /root/opam-github-pr-diff" @@
