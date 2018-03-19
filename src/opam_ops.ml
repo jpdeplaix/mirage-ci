@@ -175,6 +175,8 @@ let packages_from_diff ?(default=["ocamlfind"]) {build_t;run_t;_} target =
   match Target.id target with
   |`Ref _ -> Term.return default
   |`PR pr_num ->
+    Term.target target >>= fun target ->
+    let commit_str = Commit.hash (Target.head target) in
     let dfile =
       let open Dockerfile in
       from "alpine" @@
@@ -182,6 +184,7 @@ let packages_from_diff ?(default=["ocamlfind"]) {build_t;run_t;_} target =
       run "echo '#!/bin/sh -eu' >> /root/opam-github-pr-diff" @@
       run "echo 'REPO_SLUG=$1' >> /root/opam-github-pr-diff" @@
       run "echo 'PRNUM=$2' >> /root/opam-github-pr-diff" @@
+      run "PR_COMMIT=%s" commit_str @@ (* NOTE: Force update for each new commit *)
       run {|echo 'curl -sL https://github.com/$REPO_SLUG/pull/$PRNUM.diff | \
                   sed -E -n -e '\''s,\+\+\+ b/packages/[^/]*/([^/]*)/.*,\1,p'\'' | \
                   sort -u' >> /root/opam-github-pr-diff|} @@
