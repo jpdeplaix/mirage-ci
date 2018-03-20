@@ -73,12 +73,13 @@ module Docker_builder = struct
     let pull_cli = match pull with false -> "" | true -> " --pull" in
     let images_output = Buffer.create 1024 in
     Utils.with_tmpdir (fun tmp_dir ->
-      Rresult.R.get_ok (Dockerfile_gen.generate_dockerfile ~crunch:true (Fpath.v tmp_dir) dockerfile);
+      Rresult.R.error_msg_to_invalid_arg
+        (Dockerfile_gen.generate_dockerfile ~crunch:true (Fpath.v tmp_dir) dockerfile);
       Monitored_pool.use ~log ~label:"docker build" t.pool job_id (fun () ->
         Utils.with_timeout ~switch t.timeout (fun switch ->
           let cmd = Printf.sprintf "docker build%s %s%s%s --rm --force-rm --memory-swap -1 %s" network_cli label tag_cli pull_cli tmp_dir in
           Process.run ~switch ~output ("", [|"sh";"-c";cmd|]) >>= fun () ->
-          let cmd = Printf.sprintf "docker images -q --digests --no-trunc --filter \"label=com.docker.datakit.digest=%s\" --filter \"label=com.docker.datakit.builton=%s\"" digest builton in 
+          let cmd = Printf.sprintf "docker images -q --digests --no-trunc --filter \"label=com.docker.datakit.digest=%s\" --filter \"label=com.docker.datakit.builton=%s\"" digest builton in
           Process.run ~switch ~output:(Buffer.add_string images_output) ("",[|"sh";"-c";cmd|]))
       )) >>= fun () ->
     let sha256 = Buffer.contents images_output |> String.trim in
@@ -104,10 +105,10 @@ module Docker_builder = struct
     Process.run ~output:(fun _ -> ()) ("",[|"sh";"-c";cmd|]) >|= fun () ->
     { tag; sha256; hum=String.trim (Cstruct.to_string hum) }
 end
- 
+
 module Docker_build_cache = Cache.Make(Docker_builder)
 
-type t = Docker_build_cache.t 
+type t = Docker_build_cache.t
 let v ?network ~logs ~label ~pool ~timeout () =
   Docker_build_cache.create ~logs { Docker_builder.label; pool; timeout; network }
 
