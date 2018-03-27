@@ -224,24 +224,6 @@ let distro_build ~packages ~target ~distro ~ocaml_version ~remotes ~typ ~opam_ve
   Docker_build.run docker_t.Docker_ops.build_t ~pull:true ~hum df >>= fun img ->
   build_packages docker_t img packages
 
-(** TODO Merge with distro_build *)
-let distro_base ~packages ~target ~distro ~ocaml_version ~remotes ~typ ~opam_version ~opam_repo opam_t docker_t =
-  (* Get the commits for the mainline opam repo *)
-  let opam_repo, opam_repo_branch = opam_repo in
-  Term.branch_head opam_repo opam_repo_branch >>= fun opam_repo_commit ->
-  let opam_repo_remote = {Opam_docker.Remote.repo=opam_repo; commit=opam_repo_commit; full_remote=true} in
-  (* Get commits for any extra OPAM remotes *)
-  Term_utils.term_map_s (fun (repo,branch) ->
-    Term.branch_head repo branch >|= fun commit ->
-    {Opam_docker.Remote.repo; commit; full_remote=false}
-  ) remotes >>= fun remotes ->
-  let remotes = opam_repo_remote :: remotes in
-  Term.target target >>= fun target ->
-  Opam_build.run ~packages ~target ~distro ~ocaml_version ~remotes ~typ ~opam_version opam_t >>= fun df ->
-  let df = Dockerfile.(df @@ run "opam depext -yuij 2 %s" (String.concat ~sep:" " packages)) in
-  let hum = Fmt.(strf "base image for opam install %a" (list ~sep:sp string) packages) in
-  Docker_build.run docker_t.Docker_ops.build_t ~pull:true ~hum df
-
 let primary_ocaml_version = "4.05.0"
 let compiler_variants = ["4.03.0";"4.04.2";"4.05.0";"4.06.0"]
 
