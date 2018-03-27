@@ -159,7 +159,7 @@ let build_package {build_t;_} image pkg =
   let open !Dockerfile in
   let dfile =
     from image.Docker_build.sha256 @@
-    run "opam pin add -yn %s %s" base_pkg version_pkg @@
+    run "opam pin add -k version -yn %s %s" base_pkg version_pkg @@
     run "opam config exec -- opam-ci-install %s" pkg in
   let hum = Fmt.strf "opam install %s" pkg in
   Docker_build.run build_t ~hum dfile
