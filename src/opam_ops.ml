@@ -240,8 +240,9 @@ let compiler_variants = ["4.03.0";"4.04.2";"4.05.0";"4.06.0"]
 
 let run_phases ?volume ~revdeps ~packages ~remotes ~typ ~opam_version ~opam_repo opam_t docker_t target =
   let build ~distro ~ocaml_version =
-    packages >>= fun packages ->
-    distro_build ~packages ~target ~distro ~ocaml_version ~remotes ~typ ~opam_version ~opam_repo opam_t docker_t 
+    packages >>= function
+    | [] -> Term.return []
+    | packages -> distro_build ~packages ~target ~distro ~ocaml_version ~remotes ~typ ~opam_version ~opam_repo opam_t docker_t
   in
   (* phase 1 *)
   let debian_stable = build "debian-9" primary_ocaml_version in
@@ -250,7 +251,7 @@ let run_phases ?volume ~revdeps ~packages ~remotes ~typ ~opam_version ~opam_repo
   let pkg_revdeps =
     debian_stable >>= fun debian_stable ->
     let ts = List.map (fun (l,img) ->
-      let t = 
+      let t =
         packages >>= fun packages ->
         run_revdeps ?volume ~opam_version docker_t packages img in
       (Fmt.strf "revdep:%s" l), t
@@ -316,4 +317,3 @@ let run_phases ?volume ~revdeps ~packages ~remotes ~typ ~opam_version ~opam_repo
    ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
   ---------------------------------------------------------------------------*)
-
