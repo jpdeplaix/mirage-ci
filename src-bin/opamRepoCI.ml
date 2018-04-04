@@ -38,6 +38,7 @@ end
 let web_config =
   Web.config
     ~name:"opam-repo-ci"
+    ~github_scopes_needed:[]
     ~can_read:ACL.(everyone)
     ~can_build:ACL.(everyone)
     ()
