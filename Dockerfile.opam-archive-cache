@@ -2,4 +2,4 @@ FROM jpdeplaix/opam2-alpine
 WORKDIR /home/opam/opam-repository
 RUN git pull origin master && opam admin cache -n
 # The next command will be executed at startup then once a day
-CMD ["watch","-n","86400","sh","-c","git pull origin master && opam admin cache -n"]
+CMD ["watch","-n","86400","git pull origin master && opam admin cache -n"]
