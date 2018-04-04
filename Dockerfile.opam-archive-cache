@@ -1,4 +1,4 @@
-FROM jpdeplaix/opam2-alpine
+FROM jpdeplaix/opam2-alpine:arm64
 WORKDIR /home/opam/opam-repository
 RUN git pull origin master && opam admin cache -n
 # The next command will be executed at startup then once a day

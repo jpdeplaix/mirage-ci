@@ -1,4 +1,4 @@
-FROM jpdeplaix/opam2-alpine
+FROM jpdeplaix/opam2-alpine:arm64
 RUN sudo apk add --no-cache docker
 RUN cd /home/opam/opam-repository && git pull origin master && opam update -uy
 RUN opam install -y depext
