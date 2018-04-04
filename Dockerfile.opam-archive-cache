@@ -1,0 +1,4 @@
+FROM jpdeplaix/opam2-alpine
+RUN opam admin cache ./cache
+# The next command will be executed at startup then once a day
+EXEC ["watch","-n","86400","opam","admin","cache","./cache"]
