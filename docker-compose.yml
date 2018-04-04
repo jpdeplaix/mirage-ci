@@ -52,7 +52,6 @@ services:
       - session_data:/data
   opam-archive-cache:
     restart: always
-    user: "root"
     build:
       dockerfile: Dockerfile.opam-archive-cache
       context: .
