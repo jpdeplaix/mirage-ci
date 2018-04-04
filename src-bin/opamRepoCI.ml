@@ -7,12 +7,9 @@
 open !Astring
 
 open Datakit_ci
-open Datakit_github
 module DO = Docker_ops
 
 module Builder = struct
-
-  open Term.Infix
 
   let label = "opamRepo"
   let docker_t = DO.v ~logs ~label ~jobs:32 ()
