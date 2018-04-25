@@ -224,8 +224,8 @@ let distro_build ~packages ~target ~distro ~ocaml_version ~remotes ~typ ~opam_ve
   Docker_build.run docker_t.Docker_ops.build_t ~pull:true ~hum df >>= fun img ->
   build_packages docker_t img packages
 
-let primary_ocaml_version = "4.05.0"
-let compiler_variants = ["4.03.0";"4.04.2";"4.05.0";"4.06.0"]
+let primary_ocaml_version = "4.05"
+let compiler_variants = ["4.03";"4.04";"4.05";"4.06"]
 
 let run_phases ?volume ~revdeps ~packages ~remotes ~typ ~opam_version ~opam_repo opam_t docker_t target =
   let build distro ocaml_version =
@@ -258,14 +258,14 @@ let run_phases ?volume ~revdeps ~packages ~remotes ~typ ~opam_version ~opam_repo
       Term_utils.after phase1 >>= fun () ->
       Term.wait_for_all compiler_versions in
     (* phase 4 *)
-    let alpine36 = build "alpine-3.6" primary_ocaml_version in
+    let alpine37 = build "alpine-3.7" primary_ocaml_version in
     (* let ubuntu1604 = build "ubuntu-16.04" primary_ocaml_version in *)
     (* let ubuntu1710 = build "ubuntu-17.10" "4.06.0" in *)
     (* let centos7 = build "centos-7" primary_ocaml_version in *)
     let phase4 =
       Term_utils.after phase3 >>= fun () ->
       Term.wait_for_all [
-        "Alpine 3.6", alpine36;
+        "Alpine 3.7", alpine37;
         (* "Ubuntu 17.10", ubuntu1710; *)
         (* "Ubuntu 16.04", ubuntu1604; *)
         (* "CentOS7", centos7 *) ] in
